@@ -6,9 +6,9 @@
     <title>Document</title>
 
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
 
@@ -16,37 +16,101 @@
       .hidden {
         visibility: hidden;
       }
-      .redTxt {
+      .red-txt {
         color: red;
+      }
+      .white-txt {
+        color: whitesmoke;
+      }
+      .right-txt {
+        text-align: right;
+      }
+      .hdr-txt {
+        font-size: 60px;
+        margin-right: 10px;
+      }
+      .blue-bckgrd {
+        background-color: rgb(51, 51, 172);
+      }
+
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      .result-box {
+        justify-content: space-evenly;
+        border-bottom: 2px solid black;
+        border-right: 2px solid black;
+      }
+
+      .result-titles {
+        font-size: 30px;
+      }
+
+      @media (max-width: 500px) {
+        .sml-scrn-hdr-font {
+          font-size: 44px;
+          margin-right: 4px;
+        }
       }
     </style>
   </head>
   <body>
-    <form action="search">
-      <label for="title">Title of Kino</label>
-      <input type="text" name="title" id="title" />
-      <div class="hidden redTxt" id="error1">
-        Input must contain at least 3 characters.
+    <header class="blue-bckgrd">
+      <h1 class="right-txt white-txt hdr-txt sml-scrn-hdr-font">
+        The Kino Machino
+      </h1>
+    </header>
+    <div class="container">
+      <div class="row">
+        <form action="search col-sml-3">
+          <label for="title">Title of Kino</label>
+          <input type="text" name="title" id="title" />
+          <div class="hidden red-txt" id="error1">
+            Input must contain at least 3 characters.
+          </div>
+          <label for="type">Type</label>
+          <select name="type" id="type">
+            <option>Movie</option>
+            <option>Series</option>
+            <option>Episode</option>
+          </select>
+          <br />
+          <label for="year">Year of Release</label>
+          <input type="number" name="year" id="year" min="1870" />
+          <br />
+          <input type="button" id="fetch" value="SEARCH" />
+          <div id="numResults"></div>
+          <br />
+        </form>
+        <main class="col-sml-9">
+          <div id="results"></div>
+        </main>
       </div>
-      <br />
-      <label for="type">Type</label>
-      <select name="type" id="type">
-        <option>Movie</option>
-        <option>Series</option>
-        <option>Episode</option>
-      </select>
-      <br />
-      <label for="year">Year of Release</label>
-      <input type="number" name="year" id="year" min="1870" />
-      <br />
-      <input type="button" id="fetch" value="SEARCH" />
-    </form>
-    <br />
-    <main>
-      <div id="numResults"></div>
-      <br />
-      <div id="results"></div>
-    </main>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
     <script>
       document.getElementById("year").max = `${new Date().getFullYear()}`;
       let title = document.getElementById("title");
@@ -85,12 +149,10 @@
           .then((json) => {
             console.log(json);
             console.log(json.Search);
-            if (json.success === false || titleVal.length < 3) {
+            if (json.Search === undefined || titleVal.length < 3) {
               document.getElementById(
                 "numResults"
               ).innerText = `Please check search parameters and try again.`;
-              console.log(json);
-              console.log(json.Search);
               return;
             }
             document.getElementById(
@@ -100,21 +162,23 @@
               movie.Title;
               movie.Year;
               movie.Type;
+              movie.Poster;
               document.getElementById("results").innerHTML += `
-            <div>
-                <h2>${movie.Title}</h2>
-                <p>${movie.Year}</p>
-                <p>${movie.Type}</p>
+            <div class="row result-box">
+              <div class = "col-sml-8">
+                <article class="result-titles">${movie.Title}</article>
+                <article>${movie.Year}</article>
+                <article class="text-muted">${movie.Type}</article>
+              </div>
+              <div class = col-sml-4>
+                <img src=${movie.Poster}/>
+              </div>
             </div>
+            <br />
             `;
             });
           });
       }
-      src =
-        "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js";
-      integrity =
-        "sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW";
-      crossorigin = "anonymous";
     </script>
   </body>
 </html>
